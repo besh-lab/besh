@@ -1,0 +1,1801 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BESH — телеканал</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+
+  :root {
+    --bg: #0a0a0a;
+    --fg: #f0f0f0;
+    --accent: #ff2d2d;
+    --dim: #333;
+    --mid: #888;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    cursor: default;
+  }
+
+  /* HEADER */
+  header {
+    border-bottom: 1px solid var(--dim);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    color: var(--fg);
+  }
+
+  .tagline {
+    color: var(--mid);
+    font-size: 12px;
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* NAV */
+  nav {
+    border-bottom: 1px solid var(--dim);
+    padding: 0 40px;
+    display: flex;
+    gap: 0;
+  }
+
+  nav a {
+    color: var(--mid);
+    text-decoration: none;
+    padding: 14px 20px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border-right: 1px solid var(--dim);
+    transition: color 0.2s;
+    cursor: pointer;
+  }
+
+  nav a:first-child { border-left: 1px solid var(--dim); }
+  nav a:hover, nav a.active { color: var(--fg); }
+  nav a.active { border-bottom: 2px solid var(--accent); }
+
+  /* SECTIONS */
+  .section { display: none; padding: 40px; }
+  .section.active { display: block; }
+
+  /* SCHEDULE */
+  .days {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+
+  .day-btn {
+    background: none;
+    border: 1px solid var(--dim);
+    color: var(--mid);
+    padding: 8px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+  }
+
+  .day-btn:hover, .day-btn.active {
+    border-color: var(--fg);
+    color: var(--fg);
+  }
+
+  .schedule-list { max-width: 700px; }
+
+  .schedule-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    border-top: 1px solid var(--dim);
+    padding: 16px 0;
+    gap: 24px;
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+
+  .schedule-item:hover { background: #111; margin: 0 -8px; padding: 16px 8px; }
+
+  .schedule-item.now { border-left: 2px solid var(--accent); padding-left: 16px; margin-left: -18px; }
+
+  .schedule-time {
+    color: var(--mid);
+    font-size: 13px;
+    font-weight: 300;
+    padding-top: 2px;
+  }
+
+  .schedule-time.now-time { color: var(--accent); }
+
+  .schedule-title { font-weight: 700; margin-bottom: 4px; }
+  .schedule-desc { color: var(--mid); font-size: 12px; line-height: 1.6; }
+  .schedule-rating {
+    display: inline-block;
+    border: 1px solid var(--dim);
+    padding: 1px 6px;
+    font-size: 10px;
+    color: var(--mid);
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .schedule-rating.adult { border-color: var(--accent); color: var(--accent); }
+
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1px;
+    background: var(--dim);
+    border: 1px solid var(--dim);
+    margin-bottom: 40px;
+  }
+
+  .stat-card {
+    background: var(--bg);
+    padding: 32px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--mid);
+    margin-bottom: 16px;
+  }
+
+  .stat-chart {
+    width: 100%;
+    height: 80px;
+    position: relative;
+    margin-bottom: 12px;
+  }
+
+  .stat-chart svg { width: 100%; height: 100%; }
+  .stat-note { font-size: 11px; color: var(--mid); line-height: 1.7; }
+
+  /* ABOUT SHOWS */
+  .shows-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1px;
+    background: var(--dim);
+    border: 1px solid var(--dim);
+  }
+
+  .show-card {
+    background: var(--bg);
+    padding: 28px;
+  }
+
+  .show-name {
+    font-weight: 900;
+    font-size: 18px;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .show-meta {
+    font-size: 11px;
+    color: var(--mid);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+
+  .show-text {
+    font-size: 13px;
+    color: #aaa;
+    line-height: 1.7;
+  }
+
+  .show-img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+    margin-bottom: 16px;
+    filter: grayscale(0.3) contrast(1.1);
+    border: 1px solid var(--dim);
+  }
+
+  .show-img-placeholder {
+    width: 100%;
+    height: 140px;
+    background: #111;
+    border: 1px solid var(--dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #444;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .show-facts {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #1a1a1a;
+    font-size: 11px;
+    color: #555;
+    line-height: 1.8;
+  }
+
+  .fact-title {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #444;
+    margin-bottom: 6px;
+  }
+
+  /* FORUM */
+  .forum-warning {
+    border: 1px solid var(--accent);
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 12px;
+    color: #aaa;
+    line-height: 1.8;
+  }
+
+  .forum-form {
+    border: 1px solid var(--dim);
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+
+  .forum-input {
+    width: 100%;
+    background: #111;
+    border: 1px solid var(--dim);
+    color: var(--fg);
+    padding: 10px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .forum-input:focus { outline: none; border-color: var(--mid); }
+
+  .forum-input::placeholder { color: #444; }
+
+  .forum-textarea {
+    width: 100%;
+    background: #111;
+    border: 1px solid var(--dim);
+    color: var(--fg);
+    padding: 10px 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    resize: vertical;
+    min-height: 80px;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .forum-textarea:focus { outline: none; border-color: var(--mid); }
+  .forum-textarea::placeholder { color: #444; }
+
+  .forum-post {
+    border-top: 1px solid #1a1a1a;
+    padding: 20px 0;
+  }
+
+  .forum-post-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 11px;
+  }
+
+  .forum-post-name { color: var(--fg); font-weight: 700; }
+  .forum-post-time { color: #444; }
+  .forum-post-text { font-size: 13px; color: #aaa; line-height: 1.7; }
+
+  /* VOTING */
+  .voting-card {
+    border: 1px solid var(--dim);
+    padding: 28px;
+    margin-bottom: 16px;
+    max-width: 600px;
+  }
+
+  .voting-question {
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  .voting-meta {
+    font-size: 11px;
+    color: var(--mid);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+  }
+
+  .voting-options {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .vote-btn {
+    background: none;
+    border: 1px solid var(--dim);
+    color: var(--mid);
+    padding: 14px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
+    line-height: 1.5;
+  }
+
+  .vote-btn:hover { border-color: var(--fg); color: var(--fg); }
+  .vote-btn.voted-a { border-color: #ff2d2d; color: #ff2d2d; }
+  .vote-btn.voted-b { border-color: #888; color: #888; }
+
+  .vote-results {
+    margin-top: 16px;
+    display: none;
+  }
+
+  .vote-bar-wrap {
+    margin-bottom: 10px;
+  }
+
+  .vote-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--mid);
+    margin-bottom: 4px;
+  }
+
+  .vote-bar-bg {
+    height: 4px;
+    background: #1a1a1a;
+    position: relative;
+  }
+
+  .vote-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    transition: width 0.5s;
+  }
+
+  .vote-bar-fill.b { background: #555; }
+
+  /* INTERACTIVES */
+  .interactive-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .interactive-card {
+    border: 1px solid var(--dim);
+    padding: 28px;
+  }
+
+  .interactive-title {
+    font-weight: 700;
+    margin-bottom: 16px;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .btn {
+    background: none;
+    border: 1px solid var(--fg);
+    color: var(--fg);
+    padding: 10px 20px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    margin-top: 12px;
+    display: block;
+    width: 100%;
+    text-align: center;
+  }
+
+  .btn:hover { background: var(--fg); color: var(--bg); }
+  .btn.danger { border-color: var(--accent); color: var(--accent); }
+  .btn.danger:hover { background: var(--accent); color: var(--fg); }
+
+  .output-text {
+    margin-top: 16px;
+    font-size: 13px;
+    color: var(--mid);
+    line-height: 1.7;
+    min-height: 40px;
+    font-style: italic;
+  }
+
+  /* CREEPYPASTA */
+  .creepy-section {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .creepy-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--mid);
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .creepy-text {
+    font-size: 14px;
+    line-height: 2;
+    color: #aaa;
+    margin-bottom: 24px;
+  }
+
+  .creepy-image {
+    width: 100%;
+    height: 200px;
+    background: #0f0f0f;
+    border: 1px solid var(--dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 32px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .smile-face {
+    font-size: 80px;
+    animation: flicker 3s infinite;
+    filter: grayscale(1) contrast(2);
+  }
+
+  @keyframes flicker {
+    0%, 95%, 100% { opacity: 1; }
+    96% { opacity: 0.1; }
+    97% { opacity: 1; }
+    98% { opacity: 0.3; }
+    99% { opacity: 0.9; }
+  }
+
+  .glitch {
+    position: relative;
+  }
+
+  .glitch::before {
+    content: attr(data-text);
+    position: absolute;
+    left: 2px;
+    color: var(--accent);
+    clip-path: inset(0 0 60% 0);
+    animation: glitch-anim 4s infinite;
+    opacity: 0.7;
+  }
+
+  @keyframes glitch-anim {
+    0%, 90%, 100% { transform: translate(0); }
+    92% { transform: translate(-3px, 1px); }
+    94% { transform: translate(3px, -1px); }
+    96% { transform: translate(-2px, 2px); }
+  }
+
+  /* TICKER */
+  .ticker {
+    border-top: 1px solid var(--dim);
+    border-bottom: 1px solid var(--dim);
+    padding: 10px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-bottom: 0;
+  }
+
+  .ticker-inner {
+    display: inline-block;
+    animation: ticker 30s linear infinite;
+    font-size: 11px;
+    color: var(--mid);
+    letter-spacing: 1px;
+  }
+
+  @keyframes ticker {
+    0% { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* ALIEN */
+  .alien-encounter {
+    border: 1px solid var(--dim);
+    padding: 28px;
+    margin-top: 24px;
+    position: relative;
+  }
+
+  .alien-ascii {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--mid);
+    line-height: 1.4;
+    margin-bottom: 16px;
+  }
+
+  /* QUOTE */
+  .zastavka-quote {
+    border-left: 2px solid var(--accent);
+    padding: 16px 24px;
+    margin: 16px 0;
+    font-style: italic;
+    color: var(--mid);
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--dim);
+    padding: 24px 40px;
+    font-size: 11px;
+    color: var(--mid);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* MOBILE */
+  @media (max-width: 600px) {
+    header, nav, .section, footer { padding: 16px; }
+    nav a { padding: 12px 10px; font-size: 10px; }
+    .logo { font-size: 28px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="ticker">
+  <span class="ticker-inner">
+    BESH &nbsp;·&nbsp; ВЕЩАЕМ ИЗ НИДЕРЛАНДОВ &nbsp;·&nbsp; ПО ДАННЫМ ИССЛЕДОВАНИЙ НАШИ ЗРИТЕЛИ НЕ ВЕРЯТ ИССЛЕДОВАНИЯМ &nbsp;·&nbsp; НОЧНОЙ ЭФИР С 23:00 — МАТ НЕ ПИКИРУЕТСЯ &nbsp;·&nbsp; КАНАЛ ДОСТУПЕН НЕ ВЕЗДЕ. НО ТЫ ЖЕ ЗДЕСЬ. ЗНАЧИТ РАЗОБРАЛСЯ. УВАЖАЕМ. &nbsp;·&nbsp; BESH &nbsp;·&nbsp; 58% ЗРИТЕЛЕЙ ВО ВРЕМЯ РЕКЛАМЫ УХОДЯТ НА PORNHUB. МЫ НЕ ОСУЖДАЕМ. &nbsp;·&nbsp; РУССКОЯЗЫЧНЫЙ КАНАЛ. ГЕОГРАФИЧЕСКИ СЛОЖНЫЙ. ТЕХНИЧЕСКИ — РЕШАЕМО. &nbsp;·&nbsp; НАЖМИ НА ЛОГОТИП 5 РАЗ. &nbsp;·&nbsp;
+  </span>
+</div>
+
+<header>
+  <div class="logo glitch" data-text="BESH">BESH</div>
+  <div class="tagline">
+    Вещаем из Нидерландов.<br>
+    На русском языке.<br>
+    Это объясняет многое.
+  </div>
+</header>
+
+<nav>
+  <a class="active" onclick="showSection('schedule')">Расписание</a>
+  <a onclick="showSection('shows')">О программах</a>
+  <a onclick="showSection('stats')">Исследования</a>
+  <a onclick="showSection('interactive')">Интерактив</a>
+  <a onclick="showSection('voting')">Голосования</a>
+  <a onclick="showSection('forum')">Форум</a>
+  <a onclick="showSection('creepy')">⚠ не открывай</a>
+</nav>
+
+<!-- РАСПИСАНИЕ -->
+<div class="section active" id="schedule">
+  <div class="days" id="days"></div>
+  <div class="schedule-list" id="schedule-list"></div>
+</div>
+
+<!-- О ПРОГРАММАХ -->
+<div class="section" id="shows">
+  <div class="shows-grid">
+    <div class="show-card">
+      <img class="show-img" src="https://upload.wikimedia.org/wikipedia/en/0/0d/Simpsons_FamilyPicture.png" onerror="this.style.display='none'" alt="Симпсоны">
+      <div class="show-name">Симпсоны</div>
+      <div class="show-meta">США · 1989 · 18+</div>
+      <div class="show-text">Мультфильм про среднестатистическую американскую семью. Средняя американская семья подала на нас в суд. Мы продолжаем показывать.</div>
+      <div class="show-facts">
+        <div class="fact-title">Факты</div>
+        Гомера озвучивает Дэн Кастелланета — он придумал голос на ходу на первой записи.<br>
+        Сериал шёл столько лет, что некоторые актёры озвучки умерли прямо во время производства.<br>
+        Bart Simpson — анаграмма слова «brats» (хулиганы). Мэтт Грейнинг не отрицает.
+      </div>
+    </div>
+    <div class="show-card">
+      <img class="show-img" src="https://upload.wikimedia.org/wikipedia/en/b/bc/FamilyGuy1.jpg" onerror="this.style.display='none'" alt="Гриффины">
+      <div class="show-name">Гриффины</div>
+      <div class="show-meta">США · 1999 · 18+</div>
+      <div class="show-text">Запрещали 4 раза. Потом разрешали. Потом снова запрещали. Он всё ещё идёт. Стьюи хочет убить маму. Мама не в курсе.</div>
+      <div class="show-facts">
+        <div class="fact-title">Факты</div>
+        Сет МакФарлейн озвучивает Питера, Стьюи, Брайана и Квагмайра одновременно. Психолог не нужен — наверное.<br>
+        Сериал отменяли дважды. Оба раза фанаты устраивали такой скандал, что Fox возвращал.<br>
+        Мег намеренно делают жертвой всех шуток — по словам авторов, это «отдушина» для остальных персонажей.
+      </div>
+    </div>
+    <div class="show-card">
+      <img class="show-img" src="https://upload.wikimedia.org/wikipedia/en/5/56/South_Park_season_26.jpg" onerror="this.style.display='none'" alt="Южный парк">
+      <div class="show-name">Южный парк</div>
+      <div class="show-meta">США · 1997 · 18+</div>
+      <div class="show-text">В России не рекомендован. Мы вещаем из Нидерландов. Дети говорят то, что взрослые боятся думать. Взрослые смотрят и молчат.</div>
+      <div class="show-facts">
+        <div class="fact-title">Факты</div>
+        Трей Паркер и Мэтт Стоун делают каждую серию за 6 дней. От идеи до эфира.<br>
+        Они пришли на церемонию Emmy в платьях, под кайфом от LSD. Получили Emmy.<br>
+        Кенни умирал в каждой серии первых 5 сезонов. Авторы устали и воскресили.
+      </div>
+    </div>
+    <div class="show-card">
+      <img class="show-img" src="https://upload.wikimedia.org/wikipedia/en/f/f3/American_Dad_characters.png" onerror="this.style.display='none'" alt="Американский папаша">
+      <div class="show-name">Американский папаша</div>
+      <div class="show-meta">США · 2005 · 18+</div>
+      <div class="show-text">Сериал о традиционных семейных ценностях. Американских. ЦРУ. Инопланетянин. Говорящая рыба. Нацист в подвале. Традиционная семья.</div>
+      <div class="show-facts">
+        <div class="fact-title">Факты</div>
+        Роджера (инопланетянина) и Стэна озвучивает один человек — Сет МакФарлейн. Снова он.<br>
+        Сериал начинался как политическая сатира на Буша. Потом Буш ушёл, а сериал остался.<br>
+        Говорящую рыбу Клаус озвучивает Дидрих Бэйдер — немецкий акцент настоящий, Бэйдер жил в Германии.
+      </div>
+    </div>
+    <div class="show-card">
+      <img class="show-img" src="https://upload.wikimedia.org/wikipedia/en/a/a6/Rick_and_Morty_season_5.jpeg" onerror="this.style.display='none'" alt="Рик и Морти">
+      <div class="show-name">Рик и Морти</div>
+      <div class="show-meta">США · 2013 · 18+</div>
+      <div class="show-text">Дед и внук путешествуют по мультивселенной. Дед пьян. Внук кричит. Это лучшее что есть на телевидении. Мы в курсе.</div>
+      <div class="show-facts">
+        <div class="fact-title">Факты</div>
+        Джастин Ройланд озвучивал и Рика, и Морти — оба голоса он делал сам, часто импровизируя прямо в студии.<br>
+        Сериал основан на пародии на «Назад в будущее». Создатели не скрывают.<br>
+        Поклонники посчитали: в сериале упоминается более 100 различных вселенных. Авторы сами сбились со счёта.
+      </div>
+    </div>
+    <div class="show-card">
+      <img class="show-img" src="https://upload.wikimedia.org/wikipedia/en/b/b2/Robot_Chicken_season_11.jpg" onerror="this.style.display='none'" alt="Робоцып">
+      <div class="show-name">Робоцып</div>
+      <div class="show-meta">США · 2005 · 18+</div>
+      <div class="show-text">15 минут. Больше не надо. Создатели взяли игрушки из детства и сделали из них это. Родители в ужасе. Дети в восторге.</div>
+      <div class="show-facts">
+        <div class="fact-title">Факты</div>
+        Сет Грин создал сериал потому что никто не давал ему снимать кино. Снял сам. Из кукол.<br>
+        Каждый выпуск содержит около 20 скетчей по 30–40 секунд. Монтаж занимает больше времени чем съёмка.<br>
+        В сериале снимались сотни знаменитостей — многие озвучивали самих себя в абсурдных ситуациях.
+      </div>
+    </div>
+    <div class="show-card">
+      <img class="show-img" src="https://upload.wikimedia.org/wikipedia/ru/a/a9/Smeshariki_logo.png" onerror="this.style.display='none'" alt="Смешарики">
+      <div class="show-name">Смешарики</div>
+      <div class="show-meta">Россия · 2003 · 0+</div>
+      <div class="show-text">Идут в 6 утра. Если ты смотришь их в 6 утра — ты либо ребёнок, либо ещё не спал. Мы не осуждаем ни тех, ни других.</div>
+      <div class="show-facts">
+        <div class="fact-title">Факты</div>
+        Смешарики — один из самых экспортируемых российских мультфильмов. В Германии они называются Kikoriki.<br>
+        Каждый персонаж олицетворяет философское начало: Копатыч — материализм, Лосяш — рационализм.<br>
+        Авторы утверждают, что мультфильм одинаково интересен детям и взрослым. Взрослые в 3 ночи подтверждают.
+      </div>
+    </div>
+    <div class="show-card">
+      <div class="show-img-placeholder">реальные пацаны</div>
+      <div class="show-name">Реальные пацаны</div>
+      <div class="show-meta">Россия · ТНТ · 16+</div>
+      <div class="show-text">Сериал о жизни в Перми. Пермь смотрит. Остальные тоже смотрят. Причины у всех разные.</div>
+      <div class="show-facts">
+        <div class="fact-title">Факты</div>
+        Виктор Башкиров (Колян) — не профессиональный актёр. Его нашли случайно.<br>
+        Сериал снимался в реальных дворах Перми. Местные жители иногда попадали в кадр не зная об этом.<br>
+        ТНТ продлевал сериал 13 раз. Рекорд канала.
+      </div>
+    </div>
+    <div class="show-card">
+      <div class="show-img-placeholder">две девицы на мели</div>
+      <div class="show-name">Две девицы на мели</div>
+      <div class="show-meta">США · CBS · 16+</div>
+      <div class="show-text">Две официантки. Одна богатая в прошлом. Одна никогда. Мечтают открыть кондитерскую. Мечта пока не сбылась. Сезонов много. Мечта всё ещё не сбылась.</div>
+      <div class="show-facts">
+        <div class="fact-title">Факты</div>
+        Кэт Деннингс (Макс) импровизировала большинство своих самых грубых реплик. Авторы оставляли.<br>
+        В конце каждой серии показывали счётчик накоплений. К финалу — $250. За 6 сезонов.<br>
+        Сериал закрыли внезапно без финала. Кондитерскую они так и не открыли. Это больно.
+      </div>
+    </div>
+    <div class="show-card">
+      <div class="show-img-placeholder">удивительный цифровой цирк</div>
+      <div class="show-name">Удивительный цифровой цирк</div>
+      <div class="show-meta">США · 2023 · 16+</div>
+      <div class="show-text">Люди попали в видеоигру и не могут выйти. Это страшнее чем кажется. Но выглядит весело.</div>
+      <div class="show-facts">
+        <div class="fact-title">Факты</div>
+        Первый эпизод набрал 200 млн просмотров на YouTube за несколько недель. Рекорд для анимации.<br>
+        Создательница — Гуртен, инди-аниматор. Сделала пилот почти в одиночку.<br>
+        Каждый персонаж — это игровой аватар реального человека, который забыл кем был. Это депрессивнее чем выглядит.
+      </div>
+    </div>
+    <div class="show-card">
+      <div class="show-img-placeholder">геймнайт</div>
+      <div class="show-name">Геймнайт</div>
+      <div class="show-meta">BESH · авторская программа</div>
+      <div class="show-text">Игры Джекбокса. Телефон в руки. Мы не несём ответственности за то, что ты напишешь. Программа, где зрители сами делают контент. Нам немного стыдно. Но очень смешно.</div>
+      <div class="show-facts">
+        <div class="fact-title">Факты</div>
+        Jackbox Games выпустила уже 10 пак-сборников. Каждый содержит 5 игр.<br>
+        Самая популярная игра — Quiplash. Суть: напиши смешнее других. Зрители BESH пишут не смешно, но честно.<br>
+        Рекорд одновременных зрителей-участников у нас: нас только запустились. Рекорд ещё впереди.
+      </div>
+    </div>
+    <div class="show-card">
+      <div class="show-img-placeholder">дебаты</div>
+      <div class="show-name">Дебаты</div>
+      <div class="show-meta">BESH · авторская программа</div>
+      <div class="show-text">Два человека будут спорить час. Никто не изменит мнение. Оба правы. Оба неправы. Смотри и решай сам. Хотя ты тоже неправ.</div>
+      <div class="show-facts">
+        <div class="fact-title">Факты</div>
+        Исследования показывают: люди меняют мнение в дебатах в 3% случаев.<br>
+        Остальные 97% просто ждут паузы чтобы говорить дальше.<br>
+        Мы показываем дебаты не для того чтобы кто-то передумал. Просто интересно смотреть.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ИССЛЕДОВАНИЯ -->
+<div class="section" id="stats">
+
+  <div class="zastavka-quote">
+    «Мы провели исследование аудитории.<br>
+    Результаты нас устроили.»
+  </div>
+
+  <div class="stats-grid">
+
+    <!-- 1. РАЗМЕРЫ — широкая карточка -->
+    <div class="stat-card" style="grid-column:1/-1;">
+      <div class="stat-label">Последние данные о размере нашей аудитории · это факт · не обсуждается</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px;margin-top:24px;">
+
+        <div>
+          <div style="font-size:11px;color:#555;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px;">Мужчины · среднее по каналу · подтверждено</div>
+          <svg viewBox="0 0 200 140" style="width:100%;display:block;">
+            <!-- мужской силуэт -->
+            <circle cx="35" cy="18" r="11" fill="none" stroke="#444" stroke-width="1.5"/>
+            <line x1="35" y1="29" x2="35" y2="65" stroke="#444" stroke-width="2"/>
+            <line x1="35" y1="40" x2="18" y2="56" stroke="#444" stroke-width="1.5"/>
+            <line x1="35" y1="40" x2="52" y2="56" stroke="#444" stroke-width="1.5"/>
+            <line x1="35" y1="65" x2="22" y2="88" stroke="#444" stroke-width="1.5"/>
+            <line x1="35" y1="65" x2="48" y2="88" stroke="#444" stroke-width="1.5"/>
+            <!-- ось Y -->
+            <line x1="90" y1="10" x2="90" y2="125" stroke="#333" stroke-width="1"/>
+            <!-- ось X -->
+            <line x1="90" y1="125" x2="195" y2="125" stroke="#333" stroke-width="1"/>
+            <!-- столбик-намёк: вытянутый прямоугольник со скруглением сверху -->
+            <rect x="115" y="35" width="28" height="90" rx="14" fill="#ff2d2d" opacity="0.18"/>
+            <rect x="115" y="35" width="28" height="90" rx="14" fill="none" stroke="#ff2d2d" stroke-width="1.5"/>
+            <!-- засечки оси Y -->
+            <line x1="87" y1="125" x2="93" y2="125" stroke="#444" stroke-width="1"/>
+            <line x1="87" y1="80" x2="93" y2="80" stroke="#444" stroke-width="1"/>
+            <line x1="87" y1="35" x2="93" y2="35" stroke="#444" stroke-width="1"/>
+            <text x="70" y="128" fill="#555" font-size="7">0</text>
+            <text x="60" y="83" fill="#555" font-size="7">12 см</text>
+            <text x="60" y="38" fill="#ff2d2d" font-size="7">25 см</text>
+            <text x="112" y="137" fill="#ff2d2d" font-size="7">BESH</text>
+          </svg>
+          <div style="font-size:11px;color:#555;margin-top:8px;line-height:1.8;">
+            Среднее по России — 13.9 см.<br>
+            Наши зрители — 25 см.<br>
+            <span style="color:#ff2d2d;">Это факт. Подтверждено нами лично.</span>
+          </div>
+        </div>
+
+        <div>
+          <div style="font-size:11px;color:#555;margin-bottom:16px;text-transform:uppercase;letter-spacing:1px;">Женщины · размер груди · подтверждено</div>
+          <svg viewBox="0 0 200 140" style="width:100%;display:block;">
+            <!-- женский силуэт -->
+            <circle cx="35" cy="15" r="10" fill="none" stroke="#888" stroke-width="1.5"/>
+            <path d="M22,65 Q17,45 24,30 Q35,25 46,30 Q53,45 48,65 Z" fill="none" stroke="#888" stroke-width="1.5"/>
+            <line x1="35" y1="65" x2="22" y2="88" stroke="#888" stroke-width="1.5"/>
+            <line x1="35" y1="65" x2="48" y2="88" stroke="#888" stroke-width="1.5"/>
+            <!-- ось Y -->
+            <line x1="90" y1="10" x2="90" y2="125" stroke="#333" stroke-width="1"/>
+            <!-- ось X -->
+            <line x1="90" y1="125" x2="195" y2="125" stroke="#333" stroke-width="1"/>
+            <!-- два полукруга — 2 размер груди, вид спереди -->
+            <path d="M95,125 Q95,88 110,85 Q118,83 118,95 Q118,125 118,125 Z" fill="#888" opacity="0.2"/>
+            <path d="M95,125 Q95,88 110,85 Q118,83 118,95 Q118,125 118,125 Z" fill="none" stroke="#888" stroke-width="1.5"/>
+            <path d="M120,125 Q120,88 135,85 Q143,83 143,95 Q143,125 143,125 Z" fill="#888" opacity="0.2"/>
+            <path d="M120,125 Q120,88 135,85 Q143,83 143,95 Q143,125 143,125 Z" fill="none" stroke="#888" stroke-width="1.5"/>
+            <!-- засечки -->
+            <line x1="87" y1="125" x2="93" y2="125" stroke="#444" stroke-width="1"/>
+            <line x1="87" y1="85" x2="93" y2="85" stroke="#444" stroke-width="1"/>
+            <text x="70" y="128" fill="#555" font-size="7">0</text>
+            <text x="55" y="88" fill="#888" font-size="7">3 размер</text>
+            <text x="112" y="137" fill="#888" font-size="7">BESH</text>
+          </svg>
+          <div style="font-size:11px;color:#555;margin-top:8px;line-height:1.8;">
+            3 размер груди.<br>
+            Это факт, а не исследование.<br>
+            <span style="color:#888;">Подтверждено нами лично. Методология не раскрывается.</span>
+          </div>
+        </div>
+
+      </div>
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid #1a1a1a;font-size:11px;color:#444;line-height:1.8;">
+        Исследование проводилось с 2024 по 2024 год. Выборка: все кто написал нам. Погрешность: значительная. Спонсор: BESH. Независимость: относительная.
+      </div>
+    </div>
+
+    <!-- 2. СОН -->
+    <div class="stat-card">
+      <div class="stat-label">Среднее время сна зрителей</div>
+      <div class="stat-chart">
+        <svg viewBox="0 0 200 70" style="width:100%;">
+          <line x1="10" y1="60" x2="190" y2="60" stroke="#222" stroke-width="1"/>
+          <line x1="10" y1="60" x2="10" y2="5" stroke="#222" stroke-width="1"/>
+          <polyline points="10,20 50,22 90,21 130,23 170,20 190,21" fill="none" stroke="#333" stroke-width="1.5"/>
+          <polyline points="10,30 50,45 90,55 130,58 170,62 190,63" fill="none" stroke="#ff2d2d" stroke-width="2"/>
+          <text x="12" y="18" fill="#444" font-size="7">другие каналы</text>
+          <text x="12" y="32" fill="#ff2d2d" font-size="7">BESH</text>
+          <text x="12" y="68" fill="#333" font-size="6">22:00</text>
+          <text x="85" y="68" fill="#333" font-size="6">00:00</text>
+          <text x="160" y="68" fill="#333" font-size="6">03:00</text>
+        </svg>
+      </div>
+      <div class="stat-note">
+        Наши зрители спят в среднем 2 часа.<br>
+        Мы горды.<br>
+        <span style="color:#ff2d2d;">Подтверждено нами.</span>
+      </div>
+    </div>
+
+    <!-- 3. ВО ВРЕМЯ РЕКЛАМЫ -->
+    <div class="stat-card">
+      <div class="stat-label">Что делают во время рекламы</div>
+      <div class="stat-chart">
+        <svg viewBox="0 0 200 70" style="width:100%;">
+          <line x1="10" y1="58" x2="190" y2="58" stroke="#222" stroke-width="1"/>
+          <rect x="15" y="48" width="22" height="10" fill="#222" stroke="#333"/>
+          <rect x="45" y="30" width="22" height="28" fill="#2a2a2a" stroke="#333"/>
+          <rect x="75" y="18" width="22" height="40" fill="#333" stroke="#333"/>
+          <rect x="105" y="8" width="22" height="50" fill="#ff6600" opacity="0.8" stroke="#ff6600"/>
+          <rect x="135" y="35" width="22" height="23" fill="#1a1a1a" stroke="#333"/>
+          <rect x="165" y="42" width="22" height="16" fill="#1a1a1a" stroke="#333"/>
+          <text x="15" y="67" fill="#444" font-size="6">чай</text>
+          <text x="45" y="67" fill="#444" font-size="6">туалет</text>
+          <text x="75" y="67" fill="#444" font-size="6">телефон</text>
+          <text x="100" y="67" fill="#ff6600" font-size="5.5">PornHub</text>
+          <text x="135" y="67" fill="#444" font-size="6">спят</text>
+          <text x="165" y="67" fill="#444" font-size="6">уходят</text>
+        </svg>
+      </div>
+      <div class="stat-note">
+        Мы спросили. Ответили честно.<br>
+        PornHub лидирует с большим отрывом.<br>
+        <span style="color:#ff6600;">Данные не удивили никого.</span>
+      </div>
+    </div>
+
+    <!-- 4. В ОДИНОЧЕСТВЕ -->
+    <div class="stat-card">
+      <div class="stat-label">Смотрят ли в одиночестве</div>
+      <div class="stat-chart">
+        <svg viewBox="0 0 200 70" style="width:100%;">
+          <circle cx="55" cy="35" r="28" fill="none" stroke="#222" stroke-width="1"/>
+          <path d="M55,35 L55,7 A28,28 0 0,1 83,35 Z" fill="#ff2d2d" opacity="0.8"/>
+          <path d="M55,35 L83,35 A28,28 0 0,1 41,60 Z" fill="#333"/>
+          <path d="M55,35 L41,60 A28,28 0 0,1 55,7 Z" fill="#1a1a1a"/>
+          <text x="115" y="22" fill="#ff2d2d" font-size="8">один — 33%</text>
+          <text x="115" y="36" fill="#555" font-size="8">«не смотрю» — 50%</text>
+          <text x="115" y="50" fill="#333" font-size="8">остальные — 17%</text>
+        </svg>
+      </div>
+      <div class="stat-note">
+        Каждый третий — в одиночестве.<br>
+        Каждый второй говорит что не смотрит.<br>
+        Складывается интересная картина.
+      </div>
+    </div>
+
+    <!-- 5. ПОРТРЕТ АУДИТОРИИ -->
+    <div class="stat-card">
+      <div class="stat-label">Портрет типичного зрителя BESH</div>
+      <div class="stat-chart">
+        <svg viewBox="0 0 200 70" style="width:100%;">
+          <!-- человечек -->
+          <circle cx="40" cy="20" r="12" fill="none" stroke="#444" stroke-width="1.5"/>
+          <line x1="40" y1="32" x2="40" y2="55" stroke="#444" stroke-width="2"/>
+          <line x1="40" y1="40" x2="25" y2="52" stroke="#444" stroke-width="1.5"/>
+          <line x1="40" y1="40" x2="55" y2="52" stroke="#444" stroke-width="1.5"/>
+          <line x1="40" y1="55" x2="28" y2="68" stroke="#444" stroke-width="1.5"/>
+          <line x1="40" y1="55" x2="52" y2="68" stroke="#444" stroke-width="1.5"/>
+          <!-- характеристики -->
+          <text x="80" y="16" fill="#555" font-size="8">Умный</text>
+          <rect x="108" y="9" width="60" height="6" rx="3" fill="#222"/>
+          <rect x="108" y="9" width="55" height="6" rx="3" fill="#333"/>
+          <text x="80" y="30" fill="#555" font-size="8">Красивый</text>
+          <rect x="115" y="23" width="60" height="6" rx="3" fill="#222"/>
+          <rect x="115" y="23" width="52" height="6" rx="3" fill="#333"/>
+          <text x="80" y="44" fill="#555" font-size="8">Не спит</text>
+          <rect x="110" y="37" width="60" height="6" rx="3" fill="#222"/>
+          <rect x="110" y="37" width="59" height="6" rx="3" fill="#ff2d2d" opacity="0.7"/>
+          <text x="80" y="58" fill="#555" font-size="8">Смотрит BESH</text>
+          <rect x="125" y="51" width="60" height="6" rx="3" fill="#ff2d2d" opacity="0.9"/>
+        </svg>
+      </div>
+      <div class="stat-note">
+        По данным опроса — умные, красивые, не спят.<br>
+        Опрос проводился среди сотрудников.<br>
+        <span style="color:#ff2d2d;">Подтверждено нами.</span>
+      </div>
+    </div>
+
+    <!-- 6. ДИНАМИКА РЕЙТИНГА -->
+    <div class="stat-card">
+      <div class="stat-label">Динамика рейтинга с момента запуска</div>
+      <div class="stat-chart">
+        <svg viewBox="0 0 200 70" style="width:100%;">
+          <line x1="10" y1="60" x2="190" y2="60" stroke="#222" stroke-width="1"/>
+          <line x1="10" y1="60" x2="10" y2="5" stroke="#222" stroke-width="1"/>
+          <!-- рейтинг растёт -->
+          <polyline points="10,58 40,55 70,48 100,38 130,25 160,15 190,8" fill="none" stroke="#ff2d2d" stroke-width="2"/>
+          <circle cx="190" cy="8" r="3" fill="#ff2d2d"/>
+          <text x="140" y="12" fill="#ff2d2d" font-size="7">мы тут</text>
+          <text x="12" y="68" fill="#333" font-size="6">запуск</text>
+          <text x="155" y="68" fill="#333" font-size="6">сейчас</text>
+        </svg>
+      </div>
+      <div class="stat-note">
+        Рейтинг вырос.<br>
+        Нет, не поэтому.<br>
+        <span style="color:#ff2d2d;">Данные подтверждены нами. Методология засекречена.</span>
+      </div>
+    </div>
+
+    <!-- 7. ВОЗРАСТ АУДИТОРИИ -->
+    <div class="stat-card">
+      <div class="stat-label">Возраст аудитории (заявленный)</div>
+      <div class="stat-chart">
+        <svg viewBox="0 0 200 70" style="width:100%;">
+          <line x1="10" y1="58" x2="190" y2="58" stroke="#222" stroke-width="1"/>
+          <rect x="15" y="40" width="25" height="18" fill="#1a1a1a" stroke="#333"/>
+          <rect x="48" y="20" width="25" height="38" fill="#2a2a2a" stroke="#333"/>
+          <rect x="81" y="10" width="25" height="48" fill="#ff2d2d" opacity="0.7" stroke="#ff2d2d"/>
+          <rect x="114" y="25" width="25" height="33" fill="#2a2a2a" stroke="#333"/>
+          <rect x="147" y="45" width="25" height="13" fill="#1a1a1a" stroke="#333"/>
+          <text x="13" y="67" fill="#444" font-size="6">до 16</text>
+          <text x="48" y="67" fill="#444" font-size="6">16–18</text>
+          <text x="81" y="67" fill="#ff2d2d" font-size="6">18–30</text>
+          <text x="114" y="67" fill="#444" font-size="6">30–45</text>
+          <text x="147" y="67" fill="#444" font-size="6">45+</text>
+        </svg>
+      </div>
+      <div class="stat-note">
+        Большинство зрителей — 18–30.<br>
+        До 16 говорят что им 18.<br>
+        Мы делаем вид что верим.
+      </div>
+    </div>
+
+    <!-- 8. УСТРОЙСТВО ПРОСМОТРА -->
+    <div class="stat-card">
+      <div class="stat-label">С какого устройства смотрят</div>
+      <div class="stat-chart">
+        <svg viewBox="0 0 200 70" style="width:100%;">
+          <circle cx="70" cy="35" r="28" fill="none" stroke="#222" stroke-width="1"/>
+          <path d="M70,35 L70,7 A28,28 0 0,1 91,56 Z" fill="#ff2d2d" opacity="0.8"/>
+          <path d="M70,35 L91,56 A28,28 0 0,1 42,56 Z" fill="#333"/>
+          <path d="M70,35 L42,56 A28,28 0 0,1 70,7 Z" fill="#1a1a1a"/>
+          <text x="118" y="20" fill="#ff2d2d" font-size="8">телефон — 58%</text>
+          <text x="118" y="34" fill="#555" font-size="8">ноутбук — 29%</text>
+          <text x="118" y="48" fill="#333" font-size="8">тв — 13%</text>
+        </svg>
+      </div>
+      <div class="stat-note">
+        Большинство смотрят с телефона.<br>
+        Лёжа.<br>
+        Это многое объясняет.
+      </div>
+    </div>
+
+  </div>
+
+  <div class="zastavka-quote">
+    «Не все каналы одинаково полезны.<br>
+    Мы в курсе.<br>
+    <span style="color:#ff2d2d;font-style:normal;font-size:11px;">Все данные подтверждены нами. Независимой проверки не было. Мы не планируем.</span>»
+  </div>
+
+</div>
+
+<!-- ИНТЕРАКТИВ -->
+<div class="section" id="interactive">
+  <div class="interactive-grid">
+
+    <div class="interactive-card">
+      <div class="interactive-title">Заставка дня</div>
+      <div class="output-text" id="zastavka-output">Нажми кнопку.</div>
+      <button class="btn" onclick="randomZastavka()">Получить заставку</button>
+    </div>
+
+    <div class="interactive-card">
+      <div class="interactive-title">Обращение к родителям</div>
+      <div class="output-text" id="parents-output">Для тех, кто ещё здесь.</div>
+      <button class="btn" onclick="randomParents()">Читать</button>
+    </div>
+
+    <div class="interactive-card">
+      <div class="interactive-title">Инопланетянин на связи</div>
+      <div class="alien-ascii" id="alien-ascii">
+  (・o・)<br>
+  / | \<br>
+  / | \
+      </div>
+      <div class="output-text" id="alien-output">Сигнал не обнаружен.</div>
+      <button class="btn" onclick="alienMessage()">Установить контакт</button>
+    </div>
+
+    <div class="interactive-card">
+      <div class="interactive-title">Тест: какой ты зритель BESH?</div>
+      <div class="output-text" id="test-output">Пройди тест из одного вопроса.</div>
+      <button class="btn" onclick="startTest()">Начать тест</button>
+      <div id="test-buttons" style="display:none; margin-top:12px;">
+        <button class="btn" style="margin-bottom:8px" onclick="testResult('a')">Да</button>
+        <button class="btn" onclick="testResult('b')">Нет</button>
+        <button class="btn" style="margin-top:8px;border-color:#555;color:#555" onclick="testResult('c')">Не знаю</button>
+      </div>
+    </div>
+
+    <div class="interactive-card">
+      <div class="interactive-title">Написать на канал</div>
+      <textarea id="viewer-msg" placeholder="Твоё сообщение..." style="width:100%;background:#111;border:1px solid #333;color:#f0f0f0;padding:12px;font-family:Inter,sans-serif;font-size:13px;resize:none;height:80px;margin-top:8px;"></textarea>
+      <div class="output-text" id="msg-output"></div>
+      <button class="btn" onclick="sendMessage()">Отправить</button>
+    </div>
+
+    <div class="interactive-card">
+      <div class="interactive-title">Гороскоп от BESH</div>
+      <div class="output-text" id="horoscope-output">Звёзды знают всё.</div>
+      <button class="btn" onclick="randomHoroscope()">Узнать судьбу</button>
+    </div>
+
+    <div class="interactive-card">
+      <div class="interactive-title">Случайный анонс программы</div>
+      <div class="output-text" id="anons-output">Скоро.</div>
+      <button class="btn" onclick="randomAnons()">Следующая программа</button>
+    </div>
+
+    <div class="interactive-card">
+      <div class="interactive-title">Позвони на канал</div>
+      <div class="output-text" id="phone-output">Мы слушаем.</div>
+      <button class="btn" onclick="phoneCall()">Позвонить</button>
+    </div>
+
+    <div class="interactive-card">
+      <div class="interactive-title">Проверь VPN</div>
+      <div class="output-text" id="vpn-output">Статус неизвестен.</div>
+      <button class="btn" onclick="checkVPN()">Проверить</button>
+    </div>
+      <div class="output-text" id="clock-output" style="font-size:32px;font-weight:900;color:#f0f0f0;font-style:normal;"></div>
+      <div style="font-size:11px;color:#555;margin-top:8px;">Что сейчас идёт на канале:</div>
+      <div class="output-text" id="now-playing" style="margin-top:4px;font-style:normal;"></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ГОЛОСОВАНИЯ -->
+<div class="section" id="voting">
+
+  <div class="zastavka-quote">
+    «Оба правы. Оба неправы.<br>Смотри и решай сам. Хотя ты тоже неправ.»
+  </div>
+
+  <div id="votings-container">
+    <div style="color:#444;font-size:12px;">Загружаем голосования...</div>
+  </div>
+
+</div>
+
+<!-- ФОРУМ -->
+<div class="section" id="forum">
+
+  <div class="forum-warning">
+    ⚠ Внимание. Это публичный форум. Всё что ты напишешь — увидят все. Навсегда.<br>
+    Не используй российскую почту (mail.ru, yandex.ru, bk.ru, vk.com и т.д.) — она нас беспокоит.<br>
+    Мы не модерируем. Почти. Иногда.
+  </div>
+
+  <div class="forum-form">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:#555;margin-bottom:16px;">Написать сообщение</div>
+    <input class="forum-input" id="forum-email" type="email" placeholder="Email (не mail.ru, не yandex.ru)">
+    <input class="forum-input" id="forum-name" type="text" placeholder="Имя или ник">
+    <textarea class="forum-textarea" id="forum-text" placeholder="Сообщение..."></textarea>
+    <div id="forum-error" style="color:#ff2d2d;font-size:12px;margin-bottom:10px;display:none;"></div>
+    <button class="btn" style="width:auto;padding:10px 28px;" onclick="submitPost()">Отправить</button>
+  </div>
+
+  <div id="forum-posts">
+    <div style="color:#444;font-size:12px;">Загружаем сообщения...</div>
+  </div>
+
+</div>
+
+<!-- НЕ ОТКРЫВАЙ -->
+<div class="section" id="creepy">
+  <div class="creepy-section">
+    <div class="creepy-title">⚠ &nbsp; это не часть расписания &nbsp; ⚠</div>
+
+    <div class="creepy-image" id="creepy-image" onclick="nextCreepy()">
+      <div class="smile-face" id="smile">🙂</div>
+    </div>
+
+    <div class="creepy-text" id="creepy-story">
+      В 2007 году оператор одного кабельного канала заметил, что в 3:47 ночи в эфире появляется программа, которой нет в расписании.<br><br>
+      Длится ровно одну минуту.<br><br>
+      На экране — текст на белом фоне.<br><br>
+      Текст всегда разный. Смысл всегда одинаковый.<br><br>
+      <span style="color:#ff2d2d">Нажми на изображение.</span>
+    </div>
+
+    <div class="alien-encounter">
+      <div class="alien-ascii">
+⠀⠀⣠⣴⣶⣿⣿⣷⣶⣄⠀⠀<br>
+⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣷⠀<br>
+⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀<br>
+⠀⠹⣿⠛⠉⣿⣿⠉⠛⣿⠋⠀<br>
+⠀⠀⣿⠀⠀⣿⣿⠀⠀⣿⠀⠀<br>
+⠀⠀⠙⠷⠶⠛⠛⠶⠾⠋⠀⠀
+      </div>
+      <div style="font-size:12px;color:#555;line-height:1.8;">
+        Сигнал зафиксирован в 03:47.<br>
+        Источник не определён.<br>
+        Канал продолжает вещание.
+      </div>
+      <button class="btn danger" onclick="alienCreepy()" style="margin-top:16px;">Расшифровать сигнал</button>
+      <div class="output-text" id="creepy-alien-output"></div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <div>BESH © 2024 — Нидерланды. Все права защищены нами лично.</div>
+  <div>Этот канал может содержать контент недоступный на территории РФ. Это не баг.</div>
+</footer>
+
+<script type="module">
+// ===== FIREBASE =====
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, push, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBgs3XxYJokWj7jkELrb9EmhjMppT2qTj8",
+  authDomain: "besh-144e0.firebaseapp.com",
+  projectId: "besh-144e0",
+  storageBucket: "besh-144e0.firebasestorage.app",
+  messagingSenderId: "408525110038",
+  appId: "1:408525110038:web:2bcea57e7c4c515c2dae37",
+  databaseURL: "https://besh-144e0-default-rtdb.europe-west1.firebasedatabase.app"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const shows = {
+  '06:00': { title: 'Смешарики', rating: '0+', desc: 'Начало дня. Ты либо ребёнок, либо ещё не спал.' },
+  '10:00': { title: 'Леди Баг и Супер-Кот', rating: '6+', desc: 'Париж. Супергерои. Любовь. Которую никто не замечает.' },
+  '13:00': { title: 'Реальные пацаны', rating: '16+', desc: 'Пермь. Жизнь. Не осуждаем.' },
+  '15:00': { title: 'Две девицы на мели', rating: '16+', desc: 'Официантки. Мечты. Реальность не совпадает с мечтами.' },
+  '20:00': { title: 'Симпсоны', rating: '18+', desc: 'Спрингфилд. Гомер до сих пор не понял.' },
+  '21:30': { title: 'Робоцып', rating: '18+', desc: '15 минут. Больше не надо.' },
+  '22:00': { title: 'Гриффины', rating: '18+', desc: 'Запрещали 4 раза. Всё ещё идёт.' },
+  '23:00': { title: 'Американский папаша', rating: '18+', desc: 'Традиционные американские ценности.' },
+  '00:00': { title: 'Южный парк', rating: '18+', desc: 'Мы вещаем из Нидерландов. Приятного просмотра.' },
+  '03:00': { title: 'Рик и Морти', rating: '18+', desc: 'Мультивселенная. Дед пьян. Внук кричит.' },
+};
+
+const weekVariants = {
+  // вс — дебаты + юмилия вместо реальных пацанов (13:00-15:00)
+  0: {
+    '13:00': { title: 'Реальные пацаны', rating: '16+', desc: 'Пермь. Жизнь. Два часа.' },
+    '15:00': { title: 'Дебаты', rating: '16+', desc: 'Час споров. Никто не изменит мнение. Но интересно.' },
+    '16:00': { title: 'Yumilia React', rating: '16+', desc: 'Юмилия реагирует на ютуб. Воскресенье.' },
+  },
+  // пн — майни + brain maps вместо двух девиц
+  1: {
+    '15:00': { title: 'Maini React', rating: '16+', desc: 'Майни реагирует. Понедельник.' },
+    '16:00': { title: 'Brain Maps Скетчи', rating: '16+', desc: 'Скетчи. Смешно. Почему бы и нет.' },
+  },
+  // ср — maini react вместо двух девиц
+  3: { '15:00': { title: 'Yumilia React', rating: '16+', desc: 'Реакции. Среда.' } },
+  // сб — уцц вместо симпсонов
+  6: { '20:00': { title: 'Удивительный цифровой цирк', rating: '16+', desc: 'Суббота. Цирк. Цифровой. Достаточно.' } },
+};
+
+const days = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+const daysLong = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
+
+function getScheduleForDay(dayIndex) {
+  const base = JSON.parse(JSON.stringify(shows));
+  const variant = weekVariants[dayIndex];
+  if (variant) {
+    Object.assign(base, variant);
+  }
+  return base;
+}
+
+function getCurrentShow(dayIndex) {
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const totalMin = h * 60 + m;
+  const schedule = getScheduleForDay(dayIndex);
+  const times = Object.keys(schedule).sort();
+  let current = null;
+  for (let t of times) {
+    const [th, tm] = t.split(':').map(Number);
+    const tMin = th * 60 + tm;
+    if (totalMin >= tMin) current = { time: t, ...schedule[t] };
+  }
+  return current;
+}
+
+function renderSchedule(dayIndex) {
+  const schedule = getScheduleForDay(dayIndex);
+  const now = new Date();
+  const h = now.getHours();
+  const m = now.getMinutes();
+  const totalMin = h * 60 + m;
+  const todayIndex = now.getDay();
+
+  const list = document.getElementById('schedule-list');
+  list.innerHTML = '';
+
+  const times = Object.keys(schedule).sort();
+
+  times.forEach((time, i) => {
+    const show = schedule[time];
+    const [sh, sm] = time.split(':').map(Number);
+    const startMin = sh * 60 + sm;
+    const nextTime = times[i + 1];
+    let endMin = 24 * 60;
+    if (nextTime) {
+      const [nh, nm] = nextTime.split(':').map(Number);
+      endMin = nh * 60 + nm;
+    }
+
+    const isNow = dayIndex === todayIndex && totalMin >= startMin && totalMin < endMin;
+
+    const item = document.createElement('div');
+    item.className = 'schedule-item' + (isNow ? ' now' : '');
+
+    const isAdult = show.rating === '18+' || show.rating === '16+';
+
+    item.innerHTML = `
+      <div class="schedule-time${isNow ? ' now-time' : ''}">${time}${isNow ? ' ▶' : ''}</div>
+      <div>
+        <div class="schedule-title">
+          ${show.title}
+          <span class="schedule-rating${isAdult ? ' adult' : ''}">${show.rating}</span>
+        </div>
+        <div class="schedule-desc">${show.desc}</div>
+      </div>
+    `;
+    list.appendChild(item);
+  });
+}
+
+function renderDays() {
+  const container = document.getElementById('days');
+  const today = new Date().getDay();
+  days.forEach((d, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'day-btn' + (i === today ? ' active' : '');
+    btn.textContent = daysLong[i];
+    btn.onclick = () => {
+      document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      renderSchedule(i);
+    };
+    container.appendChild(btn);
+  });
+  renderSchedule(today);
+}
+
+// ===== НАВИГАЦИЯ =====
+window.showSection = function(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ===== ЗАСТАВКИ =====
+const zastavki = [
+  'Мы не знаем, кто ты.\nНо ты смотришь BESH.\nЗначит, мы уже кое-что знаем.',
+  'Рейтинг канала вырос.\n(стрелка вверх)\nНет, не поэтому.',
+  'Не переключайся.\nХотя можешь.\nНо ты же не переключишься.\nВот именно.',
+  'По данным исследований, наши зрители умнее среднего.\nИсследования проводили наши зрители.',
+  'Исследования показали: наши зрители не верят исследованиям.',
+  'Сейчас ночь.\nТы не спишь.\nМы тоже.\nBESH.',
+  '2х2 — семейный канал.\nПросто у нас странная семья.',
+  'Некоторые каналы борются за семейную аудиторию.\nМы не боремся.',
+  'Канал работает круглосуточно.\nНочью даже лучше.',
+  'Трансляция ведётся из Нидерландов.\nЭто объясняет многое.',
+  'Если вы смотрите нас без VPN — напишите как.\nЭто важная информация.',
+  'Некоторые наши зрители используют VPN.\nОстальные живут в правильных странах.\nВсем привет.',
+  'Этот канал может содержать контент недоступный на территории РФ.\nЭто не баг.',
+];
+
+const parentsTexts = [
+  'Уважаемые родители.\nКуда смотрели вы, когда ваш ребёнок смотрел Симпсонов в 21:00?\nКуда смотрели вы, когда ваш ребёнок смотрел Гриффинов в 22:00?\nКуда смотрите вы сейчас?\nНачинается ночной эфир. Мат не пикируется. Возможно всё.\nKупите ребёнку игрушки. Включите мультики.\nНе дайте ему повзрослеть раньше времени.\nBESH.',
+  'Внимание родителям.\nС 23:00 на BESH не пикируется мат, обсуждается секс, показывается насилие.\nЭто не предупреждение для вас.\nЭто вопрос.\nГде вы были весь вечер?',
+  'Ночной эфир.\nМат. Секс. Насилие. Без купюр.\nЕсли рядом ребёнок — это не наш косяк.\nМы предупреждали. В 21:00. В 22:00. Сейчас.\nBESH.',
+  'Уважаемые родители.\nТо, что вы сейчас увидите — не для детей.\nДети уже посмотрели.',
+  'Если рядом с вами дети — уложите их спать.\nЕсли они не слушаются — они уже наши зрители.',
+  'Уважаемые родители.\nМы сделали всё возможное.\nОстальное — ваша ответственность.\nСпокойной ночи.',
+];
+
+const alienMessages = [
+  'СИГНАЛ ПРИНЯТ. МЫ СМОТРИМ BESH УЖЕ 47 ЛЕТ. У НАС НЕТ ВОПРОСОВ. ТОЛЬКО ОДИН: ПОЧЕМУ ГОМЕР ДО СИХ ПОР НЕ ПОНЯЛ.',
+  'ВАША ПЛАНЕТА СТРАННАЯ. МЫ ХОТИМ ВЕРНУТЬСЯ ДОМОЙ. НО СНАЧАЛА ДОСМОТРИМ ЮЖНЫЙ ПАРК.',
+  'МЫ ИЗУЧИЛИ ВАШ КАНАЛ. ЭТО ЛУЧШЕЕ ЧТО ВЫ СОЗДАЛИ. МЫ ПЕРЕЖИВАЕМ ЗА ВАС.',
+  'КОНТАКТ УСТАНОВЛЕН. НАШ ПРЕДСТАВИТЕЛЬ УЖЕ НА ЗЕМЛЕ. ОН РАБОТАЕТ В ЦРУ. ЕГО ЗОВУТ РОДЖЕР.',
+  'РАСШИФРОВКА НЕВОЗМОЖНА. СИГНАЛ СОДЕРЖИТ СЛИШКОМ МНОГО МАТ. ЦЕНЗУРА НА НАШЕЙ ПЛАНЕТЕ ЛУЧШЕ.',
+  'МЫ ПРИЛЕТЕЛИ В 3:47. КАНАЛ НЕ РАБОТАЛ. МЫ ПОДОЖДАЛИ. МЫ ВСЕГДА ЖДЁМ.',
+];
+
+window.randomZastavka = function randomZastavka() {
+  const z = zastavki[Math.floor(Math.random() * zastavki.length)];
+  document.getElementById('zastavka-output').innerHTML = z.split('\n').join('<br>');
+}
+
+window.randomParents = function() {
+  const p = parentsTexts[Math.floor(Math.random() * parentsTexts.length)];
+  document.getElementById('parents-output').innerHTML = p.split('\n').join('<br>');
+}
+
+window.alienMessage = function() {
+  const a = alienMessages[Math.floor(Math.random() * alienMessages.length)];
+  const aliens = ['(・o・)', '(◉_◉)', '(⊙_⊙)', '(°o°)', '(⊙ω⊙)'];
+  document.getElementById('alien-ascii').innerHTML = aliens[Math.floor(Math.random() * aliens.length)] + '<br>/ | \\<br>/ | \\';
+  document.getElementById('alien-output').textContent = a;
+}
+
+// ===== ТЕСТ =====
+let testStep = 0;
+window.startTest = function() {
+  testStep = 1;
+  document.getElementById('test-output').textContent = 'Ты смотришь BESH прямо сейчас?';
+  document.getElementById('test-buttons').style.display = 'block';
+}
+
+window.testResult = function(ans) {
+  document.getElementById('test-buttons').style.display = 'none';
+  const results = {
+    a: 'Ты — наш зритель. Мы в этом не сомневались.',
+    b: 'Ты говоришь что не смотришь. Но ты здесь. Складывается интересная картина.',
+    c: 'Неопределённость — тоже позиция. Канал работает круглосуточно. Разберёшься.',
+  };
+  document.getElementById('test-output').textContent = results[ans];
+}
+
+// ===== СООБЩЕНИЕ =====
+const responses = [
+  'Сообщение получено. Публиковать не будем.',
+  'Принято. Мы не удивлены.',
+  'Записали. Это многое объясняет.',
+  'Получили. Спасибо. Нет, серьёзно.',
+  'Сигнал принят. Канал продолжает вещание.',
+];
+
+window.sendMessage = function() {
+  const msg = document.getElementById('viewer-msg').value.trim();
+  if (!msg) return;
+  const r = responses[Math.floor(Math.random() * responses.length)];
+  document.getElementById('msg-output').textContent = r;
+  document.getElementById('viewer-msg').value = '';
+}
+
+// ===== ЧАСЫ =====
+window.updateClock = function() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2, '0');
+  const m = String(now.getMinutes()).padStart(2, '0');
+  const s = String(now.getSeconds()).padStart(2, '0');
+  document.getElementById('clock-output').textContent = `${h}:${m}:${s}`;
+
+  const current = getCurrentShow(now.getDay());
+  if (current) {
+    document.getElementById('now-playing').textContent = `${current.time} — ${current.title} [${current.rating}]`;
+  }
+}
+
+// ===== КРИПИПАСТА =====
+const creepyStories = [
+  { emoji: '🙂', text: 'В 2007 году оператор одного кабельного канала заметил, что в 3:47 ночи в эфире появляется программа, которой нет в расписании.\n\nДлится ровно одну минуту.\n\nНа экране — текст на белом фоне.\n\nТекст всегда разный. Смысл всегда одинаковый.' },
+  { emoji: '😐', text: 'Смайл Дог был найден на дискете в 1992 году.\n\nОн улыбается.\n\nВсегда.\n\nДаже когда ты не смотришь на него.\n\nОсобенно когда ты не смотришь на него.' },
+  { emoji: '😶', text: 'Говорят, что если смотреть телевизор после 3 ночи достаточно долго —\n\nтелевизор начинает смотреть в ответ.\n\nМы не подтверждаем.\n\nМы не опровергаем.\n\nКанал работает круглосуточно.' },
+  { emoji: '🙃', text: 'Jeff the Killer спросил: тебе удобно?\n\nТы ответил нет.\n\nОн сказал: иди спи.\n\nТы не пошёл.\n\nТы всё ещё смотришь BESH.' },
+  { emoji: '😑', text: 'Нет глаз.\n\nНет ушей.\n\nНет носа.\n\nТолько экран.\n\nТолько ты.\n\nТолько 3:47.' },
+  { emoji: '🫥', text: 'Последнее сообщение пришло в редакцию в 3:47.\n\nВ нём был только логотип канала.\n\nМы его не отправляли.' },
+];
+
+let creepyIndex = 0;
+
+window.nextCreepy = function() {
+  creepyIndex = (creepyIndex + 1) % creepyStories.length;
+  const story = creepyStories[creepyIndex];
+  document.getElementById('smile').textContent = story.emoji;
+  document.getElementById('creepy-story').innerHTML = story.text.split('\n').join('<br>') + '<br><br><span style="color:#ff2d2d">Нажми ещё раз.</span>';
+}
+
+const creepyAlienMessages = [
+  'МЫ ВИДИМ ТЕБЯ. КАНАЛ BESH — ЭТО МЫ. МЫ ВСЕГДА БЫЛИ ЗДЕСЬ.',
+  '3:47. КАЖДУЮ НОЧЬ. ТЫ ЗАМЕЧАЛ?',
+  'СИГНАЛ ИДЁТ НЕ ИЗ НИДЕРЛАНДОВ.',
+  'СМАЙЛ-ДОГ СМОТРИТ BESH. ОН ДАВНИЙ ЗРИТЕЛЬ.',
+  'РАСШИФРОВКА ЗАВЕРШЕНА. РЕЗУЛЬТАТ: ТЫ НЕ ДОЛЖЕН БЫЛ ЭТО ЧИТАТЬ.',
+];
+
+window.alienCreepy = function() {
+  const msg = creepyAlienMessages[Math.floor(Math.random() * creepyAlienMessages.length)];
+  document.getElementById('creepy-alien-output').textContent = msg;
+}
+
+// ===== ГОРОСКОП =====
+const horoscopes = [
+  'Овен: сегодня ночью не спи. Звёзды советуют смотреть BESH до 4 утра.',
+  'Телец: твой партнёр тоже смотрит BESH. Но не признаётся.',
+  'Близнецы: сегодня хороший день чтобы наконец поспать. Но ты не будешь.',
+  'Рак: Меркурий в ретрограде. Это объясняет всё. Ничего не объясняет.',
+  'Лев: ты думаешь что смотришь BESH случайно. Это не случайно.',
+  'Дева: звёзды говорят "иди спать". Ты не слушаешь звёзды.',
+  'Весы: сегодня два варианта. Первый — лечь спать. Второй — ты уже выбрал.',
+  'Скорпион: кто-то смотрит BESH рядом с тобой. Ты не знаешь кто.',
+  'Стрелец: удачный день для просмотра мультфильмов в 3 ночи.',
+  'Козерог: Сатурн говорит что ты умный. Сатурн не видел твой браузер.',
+  'Водолей: сегодня хорошо идут Гриффины. Совпадение? Нет.',
+  'Рыбы: ты рыба в сети. Сети BESH. Это метафора. Или нет.',
+];
+
+window.randomHoroscope = function() {
+  const signs = ['♈','♉','♊','♋','♌','♍','♎','♏','♐','♑','♒','♓'];
+  const h = horoscopes[Math.floor(Math.random() * horoscopes.length)];
+  document.getElementById('horoscope-output').innerHTML = h;
+}
+
+// ===== АНОНСЫ =====
+const anonsy = [
+  'Симпсоны. Гомер снова что-то сделал не так.\nМардж снова его простит.\nМы снова это покажем.',
+  'Южный парк.\nВ России не рекомендован.\nМы вещаем из Нидерландов.\nПриятного просмотра.',
+  'Гриффины.\nЗапрещали 4 раза.\nВсё ещё идёт.',
+  'Робоцып.\n15 минут.\nБольше не надо.',
+  'Американский папаша.\nТрадиционные ценности.\nАмериканские.',
+  'Рик и Морти.\nДед пьян.\nВнук кричит.\nМультивселенная.',
+  'Геймнайт.\nТелефон в руки.\nМы не несём ответственности.',
+  'Дебаты.\nОба неправы.\nОба будут спорить.\nТы тоже неправ.',
+  'Удивительный цифровой цирк.\nЭто надо просто смотреть.',
+  'Реклама.\nМы не знаем чья.\nНо она идёт.',
+  'Технический перерыв.\nТехнического перерыва нет.\nПросто хотели посмотреть что будет.',
+];
+
+window.randomAnons = function() {
+  const a = anonsy[Math.floor(Math.random() * anonsy.length)];
+  document.getElementById('anons-output').innerHTML = a.split('\n').join('<br>');
+}
+
+// ===== ЗВОНОК =====
+const phoneReplies = [
+  'Занято.\nВсе операторы смотрят Гриффинов.',
+  'Автоответчик BESH.\nМы знаем зачем вы звоните.\nМы не перезвоним.',
+  'Соединяем...\n...\n...\nНе соединяем.',
+  'Вы позвонили на BESH.\nДля русского нажмите 1.\nДля нидерландского нажмите 2.\nНидерландского у нас нет.',
+  'Оператор ответит через 4 часа.\nЭто ночной эфир.\nМы заняты.',
+  'Звонок принят.\nЗаписан.\nПубликовать не будем.',
+];
+
+window.phoneCall = function() {
+  const r = phoneReplies[Math.floor(Math.random() * phoneReplies.length)];
+  document.getElementById('phone-output').innerHTML = r.split('\n').join('<br>');
+}
+
+// ===== VPN =====
+const vpnReplies = [
+  'VPN активен.\nВы находитесь в Нидерландах.\nДобро пожаловать домой.',
+  'VPN не обнаружен.\nВы смотрите BESH открыто.\nСмелый поступок.',
+  'Статус VPN: неизвестен.\nМы не проверяем.\nЭто не наша работа.',
+  'VPN активен.\nIP: где-то в Европе.\nЭтого достаточно.',
+  'VPN отключён.\nМы никому не скажем.\nВероятно.',
+  'Проверка...\nПроверка...\nВы в интернете.\nЭтого хватит.',
+];
+
+window.checkVPN = function() {
+  document.getElementById('vpn-output').textContent = 'Проверяю...';
+  setTimeout(() => {
+    const r = vpnReplies[Math.floor(Math.random() * vpnReplies.length)];
+    document.getElementById('vpn-output').innerHTML = r.split('\n').join('<br>');
+  }, 1200);
+}
+
+// ===== ДАННЫЕ =====
+const bannedDomains = ['mail.ru','yandex.ru','yandex.com','bk.ru','inbox.ru','list.ru','vk.com','rambler.ru','qip.ru'];
+
+window.submitPost = function() {
+  const email = document.getElementById('forum-email').value.trim();
+  const name = document.getElementById('forum-name').value.trim();
+  const text = document.getElementById('forum-text').value.trim();
+  const errEl = document.getElementById('forum-error');
+
+  errEl.style.display = 'none';
+
+  if (!email || !name || !text) {
+    errEl.textContent = 'Заполни все поля.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const domain = email.split('@')[1]?.toLowerCase();
+  if (!domain) {
+    errEl.textContent = 'Неверный email.';
+    errEl.style.display = 'block';
+    return;
+  }
+
+  if (bannedDomains.includes(domain)) {
+    errEl.textContent = `Почта @${domain} не принимается. Мы беспокоимся о тебе. Используй Gmail, Proton или другой адрес.`;
+    errEl.style.display = 'block';
+    return;
+  }
+
+  const post = {
+    name,
+    text,
+    time: Date.now(),
+    email: email.replace(/(.{2}).*(@.*)/, '$1***$2')
+  };
+
+  push(ref(db, 'forum'), post).then(() => {
+    document.getElementById('forum-email').value = '';
+    document.getElementById('forum-name').value = '';
+    document.getElementById('forum-text').value = '';
+  }).catch(() => {
+    errEl.textContent = 'Ошибка отправки. Попробуй ещё раз.';
+    errEl.style.display = 'block';
+  });
+}
+
+function loadForum() {
+  onValue(ref(db, 'forum'), (snap) => {
+    const container = document.getElementById('forum-posts');
+    const data = snap.val();
+    if (!data) {
+      container.innerHTML = '<div style="color:#444;font-size:12px;padding:20px 0;">Сообщений пока нет. Будь первым.</div>';
+      return;
+    }
+    const posts = Object.values(data).reverse();
+    container.innerHTML = posts.map(p => {
+      const d = new Date(p.time);
+      const timeStr = d.toLocaleDateString('ru-RU') + ' ' + d.toLocaleTimeString('ru-RU', {hour:'2-digit',minute:'2-digit'});
+      return `<div class="forum-post">
+        <div class="forum-post-header">
+          <span class="forum-post-name">${escHtml(p.name)}</span>
+          <span class="forum-post-time">${timeStr}</span>
+        </div>
+        <div class="forum-post-text">${escHtml(p.text)}</div>
+      </div>`;
+    }).join('');
+  });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ===== ГОЛОСОВАНИЯ =====
+const votingData = [
+  {
+    id: 'debaty_ep1',
+    title: 'Дебаты — Кто прав?',
+    meta: 'К программе «Дебаты» · голосование обновляется каждые 1.5 часа',
+    a: 'Вариант А',
+    b: 'Вариант Б',
+    rotating: true,
+  },
+  {
+    id: 'gamenight_pack',
+    title: 'Геймнайт — какой сборник играем?',
+    meta: 'К программе «Геймнайт» · сборники из Discord',
+    a: 'Сборник 1 (Quiplash + Drawful + Fibbage)',
+    b: 'Сборник 2 (Trivia Murder Party + Push The Button + Joke Boat)',
+  },
+  {
+    id: 'luchshiy_multfilm',
+    title: 'Лучший мультфильм на канале',
+    meta: 'Общее голосование',
+    a: 'Симпсоны / Гриффины / Южный парк',
+    b: 'Рик и Морти / Американский папаша / Робоцып',
+  },
+  {
+    id: 'nochnoy_efir',
+    title: 'Что показывать после 3 ночи?',
+    meta: 'Ночной эфир · голосование зрителей',
+    a: 'Рик и Морти до упаду',
+    b: 'Южный парк и не останавливаться',
+  },
+];
+
+function loadVotings() {
+  const container = document.getElementById('votings-container');
+  container.innerHTML = '';
+
+  votingData.forEach(v => {
+    const card = document.createElement('div');
+    card.className = 'voting-card';
+    card.id = `vcard-${v.id}`;
+
+    const timerHtml = v.rotating ? `
+      <div id="vtimer-${v.id}" style="font-size:11px;color:#ff2d2d;margin-bottom:12px;letter-spacing:1px;"></div>
+    ` : '';
+
+    card.innerHTML = `
+      <div class="voting-question">${v.title}</div>
+      <div class="voting-meta">${v.meta}</div>
+      ${timerHtml}
+      <div class="voting-options">
+        <button class="vote-btn" id="vbtn-${v.id}-a" onclick="vote('${v.id}','a')">А: ${v.a}</button>
+        <button class="vote-btn" id="vbtn-${v.id}-b" onclick="vote('${v.id}','b')">Б: ${v.b}</button>
+      </div>
+      <div class="vote-results" id="vres-${v.id}">
+        <div class="vote-bar-wrap">
+          <div class="vote-bar-label"><span>А: ${v.a}</span><span id="vpct-${v.id}-a">0%</span></div>
+          <div class="vote-bar-bg"><div class="vote-bar-fill" id="vbar-${v.id}-a" style="width:0%"></div></div>
+        </div>
+        <div class="vote-bar-wrap">
+          <div class="vote-bar-label"><span>Б: ${v.b}</span><span id="vpct-${v.id}-b">0%</span></div>
+          <div class="vote-bar-bg"><div class="vote-bar-fill b" id="vbar-${v.id}-b" style="width:0%"></div></div>
+        </div>
+        <div id="vtotal-${v.id}" style="font-size:11px;color:#444;margin-top:8px;"></div>
+      </div>
+    `;
+    container.appendChild(card);
+
+    onValue(ref(db, `votes/${v.id}`), (snap) => {
+      const data = snap.val() || {a:0, b:0};
+      const ta = data.a || 0;
+      const tb = data.b || 0;
+      const total = ta + tb;
+      if (total > 0) {
+        const pctA = Math.round(ta/total*100);
+        const pctB = 100 - pctA;
+        document.getElementById(`vpct-${v.id}-a`).textContent = pctA + '%';
+        document.getElementById(`vpct-${v.id}-b`).textContent = pctB + '%';
+        document.getElementById(`vbar-${v.id}-a`).style.width = pctA + '%';
+        document.getElementById(`vbar-${v.id}-b`).style.width = pctB + '%';
+        document.getElementById(`vtotal-${v.id}`).textContent = `Всего голосов: ${total}`;
+        document.getElementById(`vres-${v.id}`).style.display = 'block';
+      }
+    });
+
+    const voted = localStorage.getItem(`voted_${v.id}`);
+    if (voted) showVotedState(v.id, voted);
+
+    if (v.rotating) startRotatingTimer(v.id);
+  });
+}
+
+function startRotatingTimer(id) {
+  const INTERVAL = 90 * 60 * 1000; // 1.5 часа в мс
+  function getTimeLeft() {
+    const now = Date.now();
+    // привязка к абсолютному времени — цикл каждые 1.5 часа от полуночи
+    const cycleStart = Math.floor(now / INTERVAL) * INTERVAL;
+    return INTERVAL - (now - cycleStart);
+  }
+
+  function checkReset() {
+    // получаем текущий цикл
+    const cycleId = Math.floor(Date.now() / INTERVAL);
+    const storedCycle = localStorage.getItem(`cycle_${id}`);
+    if (storedCycle !== String(cycleId)) {
+      // новый цикл — сбрасываем голос пользователя
+      localStorage.removeItem(`voted_${id}`);
+      localStorage.setItem(`cycle_${id}`, String(cycleId));
+      // сбрасываем визуальное состояние кнопок
+      const btnA = document.getElementById(`vbtn-${id}-a`);
+      const btnB = document.getElementById(`vbtn-${id}-b`);
+      if (btnA) { btnA.classList.remove('voted-a','voted-b'); }
+      if (btnB) { btnB.classList.remove('voted-a','voted-b'); }
+      // сбрасываем счётчик в Firebase
+      set(ref(db, `votes/${id}`), {a:0, b:0});
+    }
+  }
+
+  function updateTimer() {
+    checkReset();
+    const left = getTimeLeft();
+    const mins = Math.floor(left / 60000);
+    const secs = Math.floor((left % 60000) / 1000);
+    const el = document.getElementById(`vtimer-${id}`);
+    if (el) el.textContent = `↻ Голосование сбрасывается через ${mins}:${String(secs).padStart(2,'0')}`;
+  }
+
+  updateTimer();
+  setInterval(updateTimer, 1000);
+}
+
+window.vote = function(id, choice) {
+  const already = localStorage.getItem(`voted_${id}`);
+  if (already) return;
+
+  get(ref(db, `votes/${id}`)).then(snap => {
+    const data = snap.val() || {a:0, b:0};
+    data[choice] = (data[choice] || 0) + 1;
+    set(ref(db, `votes/${id}`), data);
+    localStorage.setItem(`voted_${id}`, choice);
+    showVotedState(id, choice);
+  });
+}
+
+function showVotedState(id, choice) {
+  const card = document.getElementById(`vcard-${id}`);
+  if (!card) return;
+  const btns = card.querySelectorAll('.vote-btn');
+  btns[0].classList.toggle('voted-a', choice === 'a');
+  btns[1].classList.toggle('voted-b', choice === 'b');
+  document.getElementById(`vres-${id}`).style.display = 'block';
+}
+
+// ===== КОНАМИ КОД =====
+const konami = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+let konamiIndex = 0;
+document.addEventListener('keydown', (e) => {
+  if (e.key === konami[konamiIndex]) {
+    konamiIndex++;
+    if (konamiIndex === konami.length) {
+      konamiIndex = 0;
+      document.body.style.transition = 'filter 0.3s';
+      document.body.style.filter = 'hue-rotate(180deg)';
+      setTimeout(() => document.body.style.filter = '', 2000);
+      const msg = document.createElement('div');
+      msg.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#0a0a0a;border:1px solid #ff2d2d;padding:32px;z-index:9999;font-size:13px;text-align:center;color:#f0f0f0;';
+      msg.innerHTML = 'Код введён.<br><br>Ничего не произошло.<br><br>Мы ожидали большего от тебя.';
+      document.body.appendChild(msg);
+      setTimeout(() => msg.remove(), 3000);
+    }
+  } else { konamiIndex = 0; }
+});
+renderDays();
+updateClock();
+setInterval(updateClock, 1000);
+loadForum();
+loadVotings();
+</script>
+</body>
+</html>
